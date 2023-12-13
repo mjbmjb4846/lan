@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lanDraw2</title>
+    <title>lan 0.5.1</title>
     <style>
         body {
             display: flex;
@@ -202,6 +202,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            animation-duration: 0.5s;
+            animation-fill-mode: forwards;
         }
 
         .map_close {
@@ -244,7 +246,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #AA41C0;
+            background-color: #752c83;
             color: white;
             font-weight: bold;
             border-radius: 10px;
@@ -264,11 +266,11 @@
             transition: filter 0.3s ease-out;
         }
 
-        .main-page.blur-in {
+        .blur-in {
             filter: blur(50px);
         }
 
-        .main-page.blur-out {
+        .blur-out {
             filter: blur(0px);
         }
 
@@ -292,7 +294,7 @@
             grid-column: 3 / 4;
             grid-row: 1 / 2;
             font-size: 40pt;
-            background-color: #915c13; 
+            background-color: #e99724; 
         }
 
         #curse_lib {
@@ -328,6 +330,34 @@
         #duel_search {
             grid-column: 4 / 5;
             grid-row: 5 / 6;
+        }
+
+        .popup {
+            position: absolute;
+            top: 10%;
+            left: 0%;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #333;
+            justify-content: center;
+            align-items: center;
+            animation-duration: 0.5s;
+            animation-fill-mode: forwards;
+        }
+
+        .popup h1 {
+            color: blueviolet;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .popup p {
+            font-size: 16px;
+            line-height: 1.5;
         }
 
         @media screen and (max-width: 450px) {
@@ -369,17 +399,21 @@
     <div class="menu-item" id="curse_lib">Curses</div>
     <div class="menu-item" id="duel_lib">Duels</div>
     <div class="menu-item" id="rules">Rules</div>
-    <div class="menu-item" id="clap">👏</div>
+    <div class="menu-item" id="clap" onclick="clap(8)">🎶</div>
     <div class="menu-item" id="get_code">Get Code</div>
     <div class="menu-item" id="load_code">Load Code</div>
-    <div class="menu-item" id="curse_search">🔎👻</div>
-    <div class="menu-item" id="duel_search">🔎⚔️</div>
+    <div class="menu-item" id="curse_search" onclick="search(0)">🔎👻</div>
+    <div class="menu-item" id="duel_search" onclick="search(1)">🔎⚔️</div>
     <div class="menu-item" id="powerups">🪙</div>
     <div class="menu-item" id="current">🚌</div>
 </div>
 
 <script>
-    const mapURL = 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d38008.499524695326!2d-84.52111333027844!3d42.74452898674633!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1702387589094!5m2!1sen!2sus'
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
+    const mapURL = "https://www.google.com/maps/d/embed?mid=1gQw7lHhPvzuar4Xpis4ID6W9jzrrdik&ehbc=2E312F"
 
     const decks = [
         [
@@ -440,6 +474,12 @@
             { title: "Play the Alphabet Game 🔤", description: "First to find every letter of the alphabet in print, in alphabetical order, wins. If you win, gain 18 points. If your opponent wins, they gain 9 points", id: 13 }
         ]
     ]
+
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -608,6 +648,12 @@
         }
     }
 
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
     function generateNums() {
         var input = document.getElementById('num-input').innerText;
         var max = parseInt(input) || 5;
@@ -620,11 +666,54 @@
         document.getElementById('num-output2').innerText = num2;
     }
 
+    function getCardById(deck, id) {
+        let card = decks[deck].find(card => card.id === id);
+        return card ? card : null;
+    }
+
+    function search(deck) {
+        if (document.querySelector('.popup')) {
+            console.log('A popup is already open');
+            return;
+        }
+
+        const search = new Popup(
+            "Search",
+            "Search up a card by its number",
+            `<div id="cardNumber" contenteditable="true" style="border: 1px solid #000; padding: 10px; margin-bottom: 10px;"></div>
+            <button id="submitBtn">Submit</button>`
+        );
+
+        search.appendAnimate();
+
+        document.getElementById('submitBtn').addEventListener('click', function(event) {
+            event.stopPropagation();
+            processForm();
+        });
+
+        event.stopPropagation();
+        // Add event listener for outside clicks
+        document.addEventListener('click', Popup.handleClickOutside.bind(search));
+
+        function processForm() {
+            let val = parseInt(document.getElementById('cardNumber').textContent);
+            let card = getCardById(deck, val);
+            if (card) {
+                search.element().innerHTML = `<div id="${card.title}" class="popup" title="${card.title}" style="width: ${search.element().style.width}; height: ${search.element().style.height};"><h1>${card.title}</h1><p>${card.description}</p><div>`
+            }
+        }
+    }
+
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
     function openMap() {
         let map = document.createElement('div');
         map.id = 'mapDiv'
-        map.innerHTML = `<iframe class="map" src="${mapURL}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-<div class="map_close" onclick="closeMap()">Close Map</div>`;
+        map.innerHTML = `<iframe class="map" src="${mapURL}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>\n<div class="map_close" onclick="closeMap()">Close Map</div>`;
         document.body.appendChild(map);
     }
 
@@ -647,7 +736,7 @@
         menu.style.animationName = 'slideOut';
         setTimeout(() => {
             menu.style.display = 'none';
-        }, 500); // this should match the animation-duration
+        }, 500);
         let main = document.querySelector('.main-page')
         main.classList.add('blur-out');
         main.classList.remove('blur-in');
@@ -657,6 +746,107 @@
         initializeDeck(decks[0], 'curse');
         initializeDeck(decks[1], 'duel');
     };
+
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
+    function clap(n) {
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        let i = 0;
+        function playNote() {
+            var oscillator = audioContext.createOscillator();
+            var frequency = Math.random() * (523.25 - 261.63) + 261.63;
+            oscillator.frequency.value = frequency;
+            oscillator.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5); // Stop after 0.5 seconds
+
+            i++;
+            if (i < n) {
+                setTimeout(playNote, 499); // Schedule the next note
+            }
+        }
+
+        playNote(); // Start the first note
+    }
+
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
+    class Popup {
+    constructor(title, content, html, width, height) {
+        this.title = title || 'popup';
+        this.content = content || null;
+        this.html = html || null;
+        this.width = width || 'calc(100vw - 40px)';
+        this.height = height || '75vw';
+    }
+
+    embed() {
+        const popup = document.createElement('div');
+        popup.id = this.title;
+        popup.className = 'popup';
+        popup.title = this.title;
+        popup.style.width = this.width;
+        popup.style.height = this.height;
+
+        const header = document.createElement('h1');
+        header.textContent = this.title;
+
+        const paragraph = document.createElement('p');
+        paragraph.textContent = this.content || '';
+
+        const customHtml = document.createElement('div');
+        customHtml.innerHTML = this.html || '';
+
+        popup.appendChild(header);
+        popup.appendChild(paragraph);
+        popup.appendChild(customHtml);
+
+        return popup;
+    }
+
+    append() {
+        document.body.appendChild(this.embed());
+    }
+
+    async appendAnimate() {
+        this.append();
+        this.element().style.animationName = 'slideIn';
+    }
+
+    getTitle() {
+        return this.title;
+    }
+
+    static handleClickOutside(event) {
+        let element = this.element();
+        if (element) {
+            let isClickInside = element.contains(event.target);
+            if (!isClickInside) {
+                this.end();
+            }
+        }
+    }
+
+    element() {
+        return document.getElementById(this.title);
+    }
+
+    end() {
+        if (this.element()) {
+            this.element().remove();
+        }
+    }
+}
+
 </script>
 
 </body>
