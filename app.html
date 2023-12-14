@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lan 0.5.1</title>
+    <title>lan 0.6.0</title>
     <style>
+        :root {
+            --text-size: 3.5vh;
+            --color-light: #FAE1FA;
+            --color-medium: #AA41C0;
+            --color-dark: #6441C3;
+            --color-alert: #FF0000;
+            --color-highlight: #FF9B00;
+        }
+
         body {
+            user-select: none;
             display: flex;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: rgb(250, 225, 250);
+            background-color: var(--color-light);
             flex-direction: column;
             cursor: default;
             font-family: Arial, Helvetica, sans-serif;
@@ -22,12 +32,24 @@
 
         .card-container {
             display: flex;
-            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .main-page {
+            transition: filter 0.3s ease-out;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: calc((100vh - (200vh / 3 + 25vh)) / 2);
         }
 
         .card {
-            width: 450px;
-            height: 270px;
+            width: calc(500vh / 9);
+            height: calc(100vh / 3);
             transform-style: preserve-3d;
             transition: transform 0.5s;
             position: relative;
@@ -49,14 +71,15 @@
             backface-visibility: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 20px;
+            font-size: calc(var(--text-size) - 4pt);
             color: white;
             border-radius: 10px;
             overflow: scroll;
+            align-items: center;
         }
 
         .card .front {
-            background-color: rgb(0, 0, 0);
+            background-color: black;
         }
 
         .card .back {
@@ -64,37 +87,38 @@
         }
 
         .title {
-            font-size: 24px;
             font-weight: bold;
+            font-size: calc(var(--text-size) - 2pt);
             margin-top: 16px;
             margin-bottom: 8px;
             text-align: center;
         }
 
         .divider {
-            width: 100%;
+            position: relative;
+            width: 90%;
             height: 2px;
-            background-color: #ccc;
+            background-color: white;
             margin: 5px 0;
         }
 
         .description {
-            font-size: 20px;
+            position: relative;
             text-align: center;
             padding: 10px;
         }
 
         .number {
-            color: rgb(0, 0, 0);
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            font-size: 24px;
+            color: black;
+            position: fixed;
+            width: calc(var(--text-size) + 4px);
+            height: calc(var(--text-size) + 4px);
+            font-size: var(--text-size);
             font-weight: bold;
             bottom: 10px;
             right: 10px;
             padding: 5px;
-            background-color: rgb(255, 155, 0);
+            background-color: var(--color-highlight);
             border-radius: 5px;
             display: flex;
             justify-content: center;
@@ -104,23 +128,27 @@
         .grid-container {
             display: grid;
             gap: 10px;
-            background-color: #000000;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 30px;
-            width: 450px;
-            height: 112px;
-            margin-top: 5px;
+            justify-content: center;
+            align-items: center;
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr;
+            background-color: black;
+            text-align: center;
+            padding: 20px 5px;
+            width: calc(500vh / 9 - 10px);
+            height: calc(100vh / 4 - 50px);
         }
 
-        .random-num {
-            background-color: #AA41C0;
+        .grid-item {
+            background-color: var(--color-medium);
             border-radius: 5px;
-            color: #FFFFFF;
+            color: white;
+            font-size: var(--text-size);
             font-weight: bold;
             padding: 5px;
+            width: calc(100% - 10px);
+            height: calc(100% - 10px);
+            overflow: hidden;
         }
 
         #num-input {
@@ -133,7 +161,7 @@
         }
 
         #menu_button {
-            background-color: rgb(100, 65, 195);
+            background-color: var(--color-dark);
             grid-column: 2 / 3;
             grid-row: 2 / 3;
             font-weight: bold;
@@ -147,7 +175,7 @@
         }
 
         #map_button {
-            background-color: rgb(100, 65, 195);
+            background-color: var(--color-dark);
             grid-column: 3 / 4;
             grid-row: 2 / 3;
             font-weight: bold;
@@ -167,6 +195,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            user-select: text;
         }
 
         #num-output2 {
@@ -176,10 +205,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            user-select: text;
         }
 
         #num-button {
-            background-color: #FF0000;
+            background-color: var(--color-alert);
             grid-column: 1 / 2;
             grid-row: 2 / 3;
             display: flex;
@@ -189,11 +219,6 @@
 
         #num-button:hover {
             filter: brightness(65%);
-        }
-
-        svg {
-            width: 450px;
-            height: 270px;
         }
 
         .map {
@@ -211,7 +236,7 @@
             top: 10px;
             right: 10px;
             padding: 5px;
-            background-color: rgb(100, 65, 195);
+            background-color: var(--color-dark);
             color: white;
             width: 90px;
             height: 30px;
@@ -246,7 +271,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #752c83;
+            background-color: var(--color-medium);
             color: white;
             font-weight: bold;
             border-radius: 10px;
@@ -260,10 +285,6 @@
         @keyframes slideOut {
             from {transform: translateY(0);}
             to {transform: translateY(100%);}
-        }
-
-        .main-page {
-            transition: filter 0.3s ease-out;
         }
 
         .blur-in {
@@ -287,14 +308,14 @@
             grid-column: 4 / 5;
             grid-row: 1 / 2;
             font-size: 60pt;
-            background-color: #FF0000;
+            background-color: var(--color-alert);
         }
 
         #clap {
             grid-column: 3 / 4;
             grid-row: 1 / 2;
             font-size: 40pt;
-            background-color: #e99724; 
+            background-color: var(--color-highlight); 
         }
 
         #curse_lib {
@@ -350,7 +371,7 @@
         }
 
         .popup h1 {
-            color: blueviolet;
+            color: var(--color-dark);
             font-size: 24px;
             margin-bottom: 10px;
         }
@@ -360,19 +381,22 @@
             line-height: 1.5;
         }
 
-        @media screen and (max-width: 450px) {
+        @media screen and (max-width: 480px) {
+            :root {
+                --text-size: 7vw;
+            }
+
+            .main-page {
+                gap: calc((100vh - (600vw / 5 + 25vh)) / 2);
+            }
+
             .card {
                 width: 100vw;
-                height: calc(100vw * 0.6);
-            }
-        
-            svg {
-                width: 100vw;
+                height: calc(300vw / 5);
             }
 
             .grid-container {
                 width: 100vw;
-                height: calc(100vw * 0.25);
             }
         }
     </style>
@@ -384,12 +408,12 @@
     <div class="card-container" id="duel"></div>
 
     <div class="grid-container">
-        <div class="random-num" id="num-input" contenteditable="true">5</div>
-        <div class="random-num" id="num-button" onclick="generateNums()">Generate</div>
-        <div class="random-num" id="num-output1">0</div>
-        <div class="random-num" id="num-output2">0</div>
-        <div class="random-num" id="menu_button" onclick="openMenu()">Menu</div>
-        <div class="random-num" id="map_button" onclick="openMap()">Map</div>
+        <div class="grid-item" id="num-input" contenteditable="true">5</div>
+        <div class="grid-item" id="num-button" onclick="generateNums()">Generate</div>
+        <div class="grid-item" id="num-output1">0</div>
+        <div class="grid-item" id="num-output2">0</div>
+        <div class="grid-item" id="menu_button" onclick="openMenu()">Menu</div>
+        <div class="grid-item" id="map_button" onclick="openMap()">Map</div>
     </div>
 </div>
 
@@ -527,8 +551,6 @@
         backFace.classList.add('face', 'back');
         if (card.id === 'curse') {
             backFace.innerHTML = `<svg
-               width="250"
-               height="150"
                viewBox="0 0 66.145829 39.687496"
                version="1.1"
                id="svg1"
@@ -575,8 +597,6 @@
             </svg>`;
         } else {
             backFace.innerHTML = `<svg
-               width="250"
-               height="150"
                viewBox="0 0 66.145829 39.687496"
                version="1.1"
                id="svg1"
