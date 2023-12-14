@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lan 0.6.0</title>
+    <title>lan 0.6.2</title>
     <style>
         :root {
             --text-size: 3.5vh;
+            --black: #000000;
+            --white: #FFFFFF;
             --color-light: #FAE1FA;
             --color-medium: #AA41C0;
             --color-dark: #6441C3;
@@ -79,7 +81,7 @@
         }
 
         .card .front {
-            background-color: black;
+            background-color: var(--black);
         }
 
         .card .back {
@@ -109,7 +111,7 @@
         }
 
         .number {
-            color: black;
+            color: var(--black);
             position: fixed;
             width: calc(var(--text-size) + 4px);
             height: calc(var(--text-size) + 4px);
@@ -132,7 +134,7 @@
             align-items: center;
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            background-color: black;
+            background-color: var(--black);
             text-align: center;
             padding: 20px 5px;
             width: calc(500vh / 9 - 10px);
@@ -142,7 +144,7 @@
         .grid-item {
             background-color: var(--color-medium);
             border-radius: 5px;
-            color: white;
+            color: var(--white);
             font-size: var(--text-size);
             font-weight: bold;
             padding: 5px;
@@ -237,11 +239,11 @@
             right: 10px;
             padding: 5px;
             background-color: var(--color-dark);
-            color: white;
+            color: var(--white);
             width: 90px;
             height: 30px;
             font-weight: bold;
-            font-size: 13pt;
+            font-size: calc(var(--text-size) - 8pt);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -257,7 +259,7 @@
             display: none;
             gap: 10px;
             text-align: center;
-            font-size: 30px;
+            font-size: calc(var(--text-size) + 4pt);
             padding: 10px;
             width: calc(100vw - 20px);
             height: calc(100vh - 20px);
@@ -272,7 +274,7 @@
             justify-content: center;
             align-items: center;
             background-color: var(--color-medium);
-            color: white;
+            color: var(--white);
             font-weight: bold;
             border-radius: 10px;
         }
@@ -307,14 +309,14 @@
         #menu_close {
             grid-column: 4 / 5;
             grid-row: 1 / 2;
-            font-size: 60pt;
+            font-size: calc(var(--text-size) * 3);
             background-color: var(--color-alert);
         }
 
         #clap {
             grid-column: 3 / 4;
             grid-row: 1 / 2;
-            font-size: 40pt;
+            font-size: calc(var(--text-size) * 2);
             background-color: var(--color-highlight); 
         }
 
@@ -333,12 +335,12 @@
             grid-row: 2 / 3;
         }
 
-        #get_code {
+        #compose {
             grid-column: 3 / 5;
             grid-row: 3 / 4;
         }
 
-        #load_code {
+        #chonk {
             grid-column: 3 / 5;
             grid-row: 4 / 5;
         }
@@ -351,6 +353,17 @@
         #duel_search {
             grid-column: 4 / 5;
             grid-row: 5 / 6;
+        }
+
+        #powerups {
+            grid-column: 3 / 4;
+            grid-row: 6 / 7;
+        }
+
+        #colorMode {
+            grid-column: 4 / 5;
+            grid-row: 6 / 7;
+            background-color: var(--color-light);
         }
 
         .popup {
@@ -372,12 +385,12 @@
 
         .popup h1 {
             color: var(--color-dark);
-            font-size: 24px;
+            font-size: calc(var(--text-size) + 6pt);
             margin-bottom: 10px;
         }
 
         .popup p {
-            font-size: 16px;
+            font-size: calc(var(--text-size) - 2pt);
             line-height: 1.5;
         }
 
@@ -424,12 +437,12 @@
     <div class="menu-item" id="duel_lib">Duels</div>
     <div class="menu-item" id="rules">Rules</div>
     <div class="menu-item" id="clap" onclick="clap(8)">🎶</div>
-    <div class="menu-item" id="get_code">Get Code</div>
-    <div class="menu-item" id="load_code">Load Code</div>
+    <div class="menu-item" id="compose">Compose</div>
+    <div class="menu-item" id="chonk">Chonk</div>
     <div class="menu-item" id="curse_search" onclick="search(0)">🔎👻</div>
     <div class="menu-item" id="duel_search" onclick="search(1)">🔎⚔️</div>
     <div class="menu-item" id="powerups">🪙</div>
-    <div class="menu-item" id="current">🚌</div>
+    <div class="menu-item" id="colorMode" onclick="preColorMode()">🌚</div>
 </div>
 
 <script>
@@ -792,6 +805,51 @@
         }
 
         playNote(); // Start the first note
+    }
+
+    function preColorMode() {
+        let button = document.getElementById('colorMode');
+        if (button.innerHTML === '🌚') {
+            colormode(false);
+            button.innerHTML = '🌞';
+        } else {
+            colormode(true);
+            button.innerHTML = '🌚';
+        }
+    }
+
+    function colormode(colorMode) {
+        const root = document.documentElement;
+
+        const normalColors = {
+            '--black': '#000000',
+            '--white': '#FFFFFF',
+            '--color-light': '#FAE1FA',
+            '--color-medium': '#AA41C0',
+            '--color-dark': '#6441C3',
+            '--color-alert': '#FF0000',
+            '--color-highlight': '#FF9B00'
+        };
+
+        const invertedColors = {
+            '--black': '#242424',
+            '--white': '#FFFFFF',
+            '--color-light': '#000000',
+            '--color-medium': '#3A3A3A',
+            '--color-dark': '#808080',
+            '--color-alert': '#9D0000',
+            '--color-highlight': '#AA41C0'
+        };
+
+        if (colorMode) {
+            for (const [variable, value] of Object.entries(normalColors)) {
+                root.style.setProperty(variable, value);
+            }
+        } else {
+            for (const [variable, value] of Object.entries(invertedColors)) {
+                root.style.setProperty(variable, value);
+            }
+        }
     }
 
 
