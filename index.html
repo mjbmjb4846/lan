@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lan 0.7.3</title>
+    <title>lan 0.7.5</title>
     <style>
         :root {
             --text-size: 3.5vh;
@@ -197,7 +197,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            user-select: text;
         }
 
         #num-output2 {
@@ -207,7 +206,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            user-select: text;
         }
 
         #num-button {
@@ -445,14 +443,14 @@
         <div class="grid-item" id="num-button" onclick="generateNums()">Generate</div>
         <div class="grid-item" id="num-output1" onclick="copyText(`${getValFromId('num-output1')}`); blackoutElement('num-output1')">0</div>
         <div class="grid-item" id="num-output2" onclick="copyText(`${getValFromId('num-output1')} and ${getValFromId('num-output2')}`); blackoutElement('num-output1'); blackoutElement('num-output2')">0</div>
-        <div class="grid-item" id="menu_button" onclick="openMenu(); vibratePhone([50])">Menu</div>
+        <div class="grid-item" id="menu_button" onclick="openMenu()">Menu</div>
         <div class="grid-item" id="map_button" onclick="openMap()">Map</div>
     </div>
 </div>
 
 <div class="menu-container">
     <div class="menu-item" id="menu_map" onclick="openMap(); closeMenu()">Map</div>
-    <div class="menu-item" id="menu_close" onclick="closeMenu(); vibratePhone([50])">X</div>
+    <div class="menu-item" id="menu_close" onclick="closeMenu()">X</div>
     <div class="menu-item" id="curse_lib" onclick="createList(decks[0]); closeMenu()">Curses</div>
     <div class="menu-item" id="duel_lib" onclick="createList(decks[1]); closeMenu()">Duels</div>
     <div class="menu-item" id="rules">Rules</div>
@@ -767,6 +765,12 @@
         }
     }
 
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
     function copyText(text) {
         navigator.clipboard.writeText(text);
     }
@@ -783,14 +787,6 @@
         setTimeout(function() {
             element.style.backgroundColor = originalColor;
         }, 200);
-    }
-
-    function vibratePhone(pattern) {
-        if ("vibrate" in navigator) {
-            navigator.vibrate(pattern);
-        } else {
-            console.log("Vibration API not supported.");
-        }
     }
 
 
@@ -973,8 +969,13 @@
             card.appendChild(title);
             card.appendChild(description);
 
+            card.addEventListener('click', function() {
+                copyText(`CURSE ${item.id}: ${item.title.toUpperCase()}\n   - ${item.description}`);
+            });
+
             list.appendChild(card);
         });
+
         document.body.appendChild(list);
     }
 
