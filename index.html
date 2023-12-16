@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lan 0.6.2</title>
+    <title>lan 0.7.3</title>
     <style>
         :root {
             --text-size: 3.5vh;
@@ -394,6 +394,26 @@
             line-height: 1.5;
         }
 
+        .list {
+            position: absolute;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow-y: visible;
+            overflow-x: hidden;
+            background-color: var(--color-light);
+            color: var(--color-dark);
+        }
+
+        .list div {
+            margin: 10px;
+        }
+
+        .list div:hover {
+            background-color: var(--color-highlight);
+            color: var(--color-light);
+        }
+
         @media screen and (max-width: 480px) {
             :root {
                 --text-size: 7vw;
@@ -423,26 +443,26 @@
     <div class="grid-container">
         <div class="grid-item" id="num-input" contenteditable="true">5</div>
         <div class="grid-item" id="num-button" onclick="generateNums()">Generate</div>
-        <div class="grid-item" id="num-output1">0</div>
-        <div class="grid-item" id="num-output2">0</div>
-        <div class="grid-item" id="menu_button" onclick="openMenu()">Menu</div>
+        <div class="grid-item" id="num-output1" onclick="copyText(`${getValFromId('num-output1')}`); blackoutElement('num-output1')">0</div>
+        <div class="grid-item" id="num-output2" onclick="copyText(`${getValFromId('num-output1')} and ${getValFromId('num-output2')}`); blackoutElement('num-output1'); blackoutElement('num-output2')">0</div>
+        <div class="grid-item" id="menu_button" onclick="openMenu(); vibratePhone([50])">Menu</div>
         <div class="grid-item" id="map_button" onclick="openMap()">Map</div>
     </div>
 </div>
 
 <div class="menu-container">
-    <div class="menu-item" id="menu_map" onclick="openMap()">Map</div>
-    <div class="menu-item" id="menu_close" onclick="closeMenu()">X</div>
-    <div class="menu-item" id="curse_lib">Curses</div>
-    <div class="menu-item" id="duel_lib">Duels</div>
+    <div class="menu-item" id="menu_map" onclick="openMap(); closeMenu()">Map</div>
+    <div class="menu-item" id="menu_close" onclick="closeMenu(); vibratePhone([50])">X</div>
+    <div class="menu-item" id="curse_lib" onclick="createList(decks[0]); closeMenu()">Curses</div>
+    <div class="menu-item" id="duel_lib" onclick="createList(decks[1]); closeMenu()">Duels</div>
     <div class="menu-item" id="rules">Rules</div>
     <div class="menu-item" id="clap" onclick="clap(8)">🎶</div>
     <div class="menu-item" id="compose">Compose</div>
-    <div class="menu-item" id="chonk">Chonk</div>
+    <div class="menu-item" id="chonk" onclick="openChonkyChonk()">Chonk</div>
     <div class="menu-item" id="curse_search" onclick="search(0)">🔎👻</div>
     <div class="menu-item" id="duel_search" onclick="search(1)">🔎⚔️</div>
     <div class="menu-item" id="powerups">🪙</div>
-    <div class="menu-item" id="colorMode" onclick="preColorMode()">🌚</div>
+    <div class="menu-item" id="colorMode" onclick="preColorMode()" style="outline: 2px solid var(--color-highlight);">🌚</div>
 </div>
 
 <script>
@@ -451,6 +471,8 @@
 
 
     const mapURL = "https://www.google.com/maps/d/embed?mid=1gQw7lHhPvzuar4Xpis4ID6W9jzrrdik&ehbc=2E312F"
+
+    var usedCards = [0, 0];
 
     const decks = [
         [
@@ -672,12 +694,20 @@
     function flipCard(card, deck, containerId) {
         card.classList.toggle('flipped');
 
-        if (card.classList.contains('flipped')) {
-            setTimeout(() => {
-                const index = Array.from(card.parentElement.children).indexOf(card);
-                deck.push(deck.shift());
-                updateCard(card, deck[0]);
-            }, 500);
+        if (!card.classList.contains('flipped')) {
+            deck.push(deck.shift());
+            updateCard(card, deck[0]);
+
+            if (card.id === 'curse') {
+                if (usedCards[0] < decks[0].length){
+                    usedCards[0] ++
+                }
+            }
+            if (card.id === 'duel') {
+                if (usedCards[1] < decks[1].length){
+                    usedCards[1] ++
+                }
+            }
         }
     }
 
@@ -725,7 +755,7 @@
         });
 
         event.stopPropagation();
-        // Add event listener for outside clicks
+        
         document.addEventListener('click', Popup.handleClickOutside.bind(search));
 
         function processForm() {
@@ -734,6 +764,32 @@
             if (card) {
                 search.element().innerHTML = `<div id="${card.title}" class="popup" title="${card.title}" style="width: ${search.element().style.width}; height: ${search.element().style.height};"><h1>${card.title}</h1><p>${card.description}</p><div>`
             }
+        }
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text);
+    }
+
+    function getValFromId(id) {
+        let element = document.getElementById(id);
+        return element.innerText;
+    }
+
+    function blackoutElement(id) {
+        let element = document.getElementById(id);
+        var originalColor = element.style.backgroundColor;
+        element.style.backgroundColor = 'var(--black)';
+        setTimeout(function() {
+            element.style.backgroundColor = originalColor;
+        }, 200);
+    }
+
+    function vibratePhone(pattern) {
+        if ("vibrate" in navigator) {
+            navigator.vibrate(pattern);
+        } else {
+            console.log("Vibration API not supported.");
         }
     }
 
@@ -753,6 +809,10 @@
     function closeMap() {
         let map = document.getElementById('mapDiv');
         map.remove();
+    }
+
+    function openChonkyChonk() {
+        window.open('https://doodles.google/doodle/celebrating-garden-gnomes/');
     }
 
     function openMenu() {
@@ -850,6 +910,72 @@
                 root.style.setProperty(variable, value);
             }
         }
+    }
+
+
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+
+    function createList(rawData) {
+        let data = [];
+        let numItems = 0;
+
+        if (rawData === decks[0]) {
+            numItems = usedCards[0];
+        } else if (rawData === decks[1]) {
+            numItems = usedCards[1];
+        }
+
+        if (numItems > 1) {
+            data = [rawData[0]].concat((rawData.slice(0 - (numItems - 1))).reverse());
+        } else if (numItems > 0) {
+            data = [rawData[0]];
+        } else {
+            data = [{ title: "None Found:", description: "The curses you play will show up here!", id: 0 }];
+        }
+
+        //data.sort(function(a, b) {
+        //    return a.id - b.id;
+        //});
+
+        let list = document.createElement('div');
+        list.className = 'list';
+
+        let closeButton = document.createElement('button')
+        closeButton.textContent = 'X';
+        closeButton.style.fontWeight = 'bold';
+        closeButton.style.position = 'fixed';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '10px';
+        closeButton.style.background = 'var(--color-alert)';
+        closeButton.style.border = 'none';
+        closeButton.style.color = 'white';
+        closeButton.style.padding = '10px 20px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.borderRadius = '5px';
+
+        closeButton.addEventListener('click', function() {
+            document.body.removeChild(list);
+        });
+
+        list.appendChild(closeButton);
+
+        data.forEach(function(item) {
+            let card = document.createElement('div');
+            let title = document.createElement('h2');
+            let description = document.createElement('p');
+
+            title.textContent = item.title;
+            description.textContent = item.description;
+
+            card.appendChild(title);
+            card.appendChild(description);
+
+            list.appendChild(card);
+        });
+        document.body.appendChild(list);
     }
 
 
