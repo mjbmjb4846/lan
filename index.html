@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lan 0.7.5</title>
+    <title>lan 0.8.0</title>
     <style>
         :root {
             --text-size: 3.5vh;
@@ -455,7 +455,7 @@
     <div class="menu-item" id="duel_lib" onclick="createList(decks[1]); closeMenu()">Duels</div>
     <div class="menu-item" id="rules">Rules</div>
     <div class="menu-item" id="clap" onclick="clap(8)">🎶</div>
-    <div class="menu-item" id="compose">Compose</div>
+    <div class="menu-item" id="compose" onclick="imgCompose()">Compose</div>
     <div class="menu-item" id="chonk" onclick="openChonkyChonk()">Chonk</div>
     <div class="menu-item" id="curse_search" onclick="search(0)">🔎👻</div>
     <div class="menu-item" id="duel_search" onclick="search(1)">🔎⚔️</div>
@@ -977,6 +977,10 @@
         });
 
         document.body.appendChild(list);
+    }
+
+    function imgCompose() {
+        window.open('picMusic.html', '_blank');
     }
 
 
