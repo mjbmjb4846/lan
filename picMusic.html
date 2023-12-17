@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <title>0.6.1</title>
     <style>
         * {
             box-sizing: border-box;
@@ -148,6 +149,19 @@
             clearInterval(intervalId);
         }
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        let started = false;
+
+        function resumeAudioContext() {
+        if (started) return;
+        started = true;
+        audioCtx.resume();
+        }
+
+        document.addEventListener('click', resumeAudioContext);
+        document.addEventListener('touchstart', resumeAudioContext);
+        document.addEventListener('touchend', resumeAudioContext);
+
         oscillator = audioCtx.createOscillator();
         oscillator.type = "sine";
         oscillator.start();
