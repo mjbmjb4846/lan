@@ -3,39 +3,100 @@
 
 <head>
     <style>
-
-        label {
-            position: relative;
-            left: 0;
-            font-size: 30pt;
-            height: 5vh;
-            overflow: hidden;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        input {
-            position: relative;
-            right: 0;
-            width: 100vw;
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        input[type="file"] {
+            opacity: 0; /* Make the file input invisible */
+            position: absolute; /* Position it absolutely */
+            width: 20vh; /* Same width as the canvas */
+            height: 20vh; /* Same height as the canvas */
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none; /* Override default CSS styles */
+            appearance: none;
+            width: 80vw;
             max-width: 800px;
-            height: 8vh;
-            font-size: 30pt;
-            overflow: hidden;
+            height: 3vh;
+            background: purple;
+            outline: none;
+            filter: brightness(100%);
+            transition: opacity .2s;
+            margin: 0 auto;
+            font-size: 2vw;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; /* Override default look */
+            appearance: none;
+            width: 3vh;
+            height: 5vh;
+            background: orange;
+            cursor: pointer;
+        }
+
+        input[type="range"]:hover {
+            filter: brightness(160%)
+        }
+
+        label {
+            display: block;
+            font-size: 2vw;
+            margin: 1vw;
+        }
+
+        input[type="number"], input[type="range"] {
+            display: block;
+            width: 80vw;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 2vw;
         }
 
         canvas {
-            height: 16vh;
+            display: block;
+            max-width: 800px;
+            height: 20vh;
+            width: 20vh;
+            margin: 2vw auto;
+            border: 2px solid white;
             overflow: scroll;
         }
 
         button {
-            font-size: 30pt;
+            display: block;
+            width: 40vw;
+            max-width: 400px;
+            height: 10vh;
+            margin: 2vw auto;
+            font-size: 3vw;
+            background-color: purple;
+            color: white;
+            border: none;
+            border-radius: 10px;
         }
-    </style>
+
+        button:hover {
+            background-color: orange;
+            color: black;
+            cursor: pointer;
+        }
+    </style>    
 </head>
 
 <body>
 
-<input type="file" id="imgInput" accept="image/*">
+<input type="file" id="fileInput" accept="image/*">
 <label for="numChunks">Number of Chunks:</label>
 <input type="number" id="numChunks" min="1" value="48">
 <label for="minDuration">Min Note Duration (ms):</label>
@@ -43,16 +104,16 @@
 <label for="maxDuration">Max Note Duration (ms):</label>
 <input type="range" id="maxDuration" min="100" max="2500" value="500">
 <label for="minFreq">Min Frequency (Hz):</label>
-<input type="range" id="minFreq" min="20" max="20000" value="20">
+<input type="range" id="minFreq" min="0" max="1600" value="20">
 <label for="maxFreq">Max Frequency (Hz):</label>
-<input type="range" id="maxFreq" min="20" max="20000" value="800">
+<input type="range" id="maxFreq" min="0" max="1600" value="800">
 <label for="restThresh">Rest Threshold:</label>
-<input type="range" id="restThresh" min="0" max="100" value="40">
+<input type="range" id="restThresh" min="0" max="100" value="36">
 <canvas id="canvas"></canvas>
 <button id="playSound" style="display: none;">Play Sound</button>
 
 <script>
-    const imgInput = document.getElementById('imgInput');
+    const imgInput = document.getElementById('fileInput');
     const numChunksInput = document.getElementById('numChunks');
     const minDurationInput = document.getElementById('minDuration');
     const maxDurationInput = document.getElementById('maxDuration');
@@ -75,6 +136,12 @@
         img.src = URL.createObjectURL(this.files[0]);
     });
 
+    const rect = canvas.getBoundingClientRect();
+
+    fileInput.style.position = 'absolute';
+    fileInput.style.left = `${rect.left}px`;
+    fileInput.style.top = `${rect.top}px`;
+
     document.getElementById('playSound').addEventListener('click', function() {
         if (audioCtx) {
             oscillator.stop();
@@ -82,7 +149,7 @@
         }
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         oscillator = audioCtx.createOscillator();
-        oscillator.type = "triangle";
+        oscillator.type = "sine";
         oscillator.start();
         oscillator.connect(audioCtx.destination);
 
@@ -92,7 +159,6 @@
             const gray = 0.3 * imgData.data[i] + 0.59 * imgData.data[i + 1] + 0.11 * imgData.data[i + 2];
             grayValues.push((Math.round(gray * 100))/100.0);
         }
-        console.log(grayValues)
 
         const numChunks = parseInt(numChunksInput.value);
         const chunkSize = Math.floor(grayValues.length / numChunks);
