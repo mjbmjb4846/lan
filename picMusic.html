@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
-    <title>0.6.1.unstable</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0.6.1-3</title>
     <style>
         * {
             box-sizing: border-box;
@@ -150,18 +151,6 @@
             clearInterval(intervalId);
         }
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        let started = false;
-
-        function resumeAudioContext() {
-        if (started) return;
-        started = true;
-        audioCtx.resume();
-        }
-
-        document.addEventListener('click', resumeAudioContext);
-        document.addEventListener('touchstart', resumeAudioContext);
-        document.addEventListener('touchend', resumeAudioContext);
 
         oscillator = audioCtx.createOscillator();
         oscillator.type = "sine";
