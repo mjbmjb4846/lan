@@ -2,9 +2,12 @@
 <html lang="en">
 
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0.6.1-4</title>
+    <title>0.6.2</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,10 +22,10 @@
         }
 
         input[type="file"] {
-            opacity: 0; /* Make the file input invisible */
-            position: absolute; /* Position it absolutely */
-            width: 20vh; /* Same width as the canvas */
-            height: 20vh; /* Same height as the canvas */
+            opacity: 0;
+            position: absolute;
+            width: 20vh;
+            height: 20vh;
         }
 
         input[type="range"] {
@@ -33,6 +36,7 @@
             height: 3vh;
             background: purple;
             outline: none;
+            -webkit-filter: brightness(100%);
             filter: brightness(100%);
             transition: opacity .2s;
             margin: 0 auto;
@@ -40,7 +44,9 @@
         }
 
         input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; /* Override default look */
+            -webkit-appearance: none; /* Safari/Chrome */
+            -moz-appearance: none; /* Firefox */
+            -ms-appearance: none; /* Internet Explorer */
             appearance: none;
             width: 3vh;
             height: 5vh;
@@ -49,12 +55,13 @@
         }
 
         input[type="range"]:hover {
+            -webkit-filter: brightness(160%);
             filter: brightness(160%)
         }
 
         label {
             display: block;
-            font-size: 2vw;
+            font-size: 3vh;
             margin: 1vw;
         }
 
@@ -116,6 +123,7 @@
 <button id="playSound" style="display: none;">Play Sound</button>
 
 <script>
+    console.log('CLICK 0');
     const imgInput = document.getElementById('fileInput');
     const numChunksInput = document.getElementById('numChunks');
     const minDurationInput = document.getElementById('minDuration');
@@ -127,7 +135,7 @@
     const ctx = canvas.getContext('2d');
 
     var audioContext;
-    let oscillator, intervalId;
+    let oscillator;
 
     imgInput.addEventListener('change', function() {
         const img = new Image();
@@ -147,6 +155,8 @@
     imgInput.style.top = `${rect.top}px`;
 
     document.getElementById('playSound').addEventListener('click', function() {
+        console.log('CLICK 1');
+        let intervalId;
         if (audioContext) {
             oscillator.stop();
             clearInterval(intervalId);
@@ -158,12 +168,16 @@
         oscillator.start();
         oscillator.connect(audioContext.destination);
 
+        console.log('CLICK 2');
+
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const grayValues = [];
         for (let i = 0; i < imgData.data.length; i += 4) {
             const gray = 0.3 * imgData.data[i] + 0.59 * imgData.data[i + 1] + 0.11 * imgData.data[i + 2];
             grayValues.push((Math.round(gray * 100))/100.0);
         }
+
+        console.log('CLICK 3');
 
         const numChunks = parseInt(numChunksInput.value);
         const chunkSize = Math.floor(grayValues.length / numChunks);
@@ -205,13 +219,18 @@
             durations[i] = duration;
         });
 
+        console.log('CLICK 4');
+
         oscillator.frequency.value = frequencies[0];
+
         let i = 1;
         intervalId = setInterval(function() {
+            console.log(oscillator.frequency.value);
             if (i < frequencies.length) {
                 oscillator.frequency.value = frequencies[i];
                 clearInterval(intervalId);
                 intervalId = setInterval(function() {
+                    console.log(oscillator.frequency.value);
                     if (i < frequencies.length) {
                         oscillator.frequency.value = frequencies[i];
                         i++;
@@ -226,6 +245,7 @@
                 clearInterval(intervalId);
             }
         }, durations[0]);
+        console.log('CLICK 5');
     });
 </script>
 
