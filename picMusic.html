@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0.6.1-3</title>
+    <title>0.6.1-4</title>
     <style>
         * {
             box-sizing: border-box;
@@ -126,7 +126,8 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
-    let audioCtx, oscillator, intervalId;
+    var audioContext;
+    let oscillator, intervalId;
 
     imgInput.addEventListener('change', function() {
         const img = new Image();
@@ -141,21 +142,21 @@
 
     const rect = canvas.getBoundingClientRect();
 
-    fileInput.style.position = 'absolute';
-    fileInput.style.left = `${rect.left}px`;
-    fileInput.style.top = `${rect.top}px`;
+    imgInput.style.position = 'absolute';
+    imgInput.style.left = `${rect.left}px`;
+    imgInput.style.top = `${rect.top}px`;
 
     document.getElementById('playSound').addEventListener('click', function() {
-        if (audioCtx) {
+        if (audioContext) {
             oscillator.stop();
             clearInterval(intervalId);
         }
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        oscillator = audioCtx.createOscillator();
+        oscillator = audioContext.createOscillator();
         oscillator.type = "sine";
         oscillator.start();
-        oscillator.connect(audioCtx.destination);
+        oscillator.connect(audioContext.destination);
 
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const grayValues = [];
