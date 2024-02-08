@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompSoc Map | lan 3.2.3</title>
+
+    <!-- Uses Leaflet as the mapping API -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+    <style>
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            transform: translate(-10px, -10px);
+        }
+
+    </style>
+
+    
+
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Additional files must be put after the map div is made -->
+    <script src="./scripts/map/create.js"></script>
+
+    <script src="./scripts/utility.js"></script>
+    <script src="./scripts/map/features.js"></script>
+    <script src="./scripts/map/user.js"></script>
+    <script src="./scripts/map/editorBasic.js"></script>
+
+    <script src="./scripts/map/init.js"></script>
+    
+</body>
+</html>

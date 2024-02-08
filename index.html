@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lan 3.2.3</title>    
+
+    <!-- Important Scripts: Be Sure to Add as Files are Created -->
+    <link href="./styles/global.css" type="text/css" rel="stylesheet">
+
+    <script src="./classes/Popup.js"></script>
+
+    <script src="./scripts/data/decks.js"></script>
+
+    <script src="./scripts/utility.js"></script>
+    <script src="./scripts/style.js"></script>
+    <script src="./scripts/sound.js"></script>
+    <script src="./scripts/cards.js"></script>
+    <script src="./scripts/decks.js"></script>
+    <script src="./scripts/map.js"></script>
+    <script src="./scripts/menu.js"></script>
+
+    <script src="./scripts/init.js"></script>
+
+</head>
+<body>
+
+<div class="main-page">
+    <div class="card-container" id="curse"></div>
+    <div class="card-container" id="duel"></div>
+
+    <div class="grid-container">
+        <div class="grid-item" id="num-input" inputmode="numeric" contenteditable="true">5</div>
+        <div class="grid-item" id="num-button" onclick="generateNums()">Generate</div>
+        <div class="grid-item" id="num-output1" title="Copy 1 Number" onclick="copyText(`${getValFromId('num-output1')}`); blackoutElement('num-output1')">0</div>
+        <div class="grid-item" id="num-output2" title="Copy 2 Numbers" onclick="copyText(`${getValFromId('num-output1')} and ${getValFromId('num-output2')}`); blackoutElement('num-output1'); blackoutElement('num-output2')">0</div>
+        <div class="grid-item" id="menu_button" onclick="openMenu()">Menu</div>
+        <div class="grid-item" id="map_button" onclick="openMap()">Map</div>
+    </div>
+</div>
+
+<div class="menu-container">
+    <div class="menu-item" id="menu_map" onclick="openMap(); closeMenu()">Map</div>
+    <div class="menu-item" id="menu_close" onclick="closeMenu()">X</div>
+    <div class="menu-item" id="curse_lib" onclick="createList(decks[0]); closeMenu()">Curses</div>
+    <div class="menu-item" id="duel_lib" onclick="createList(decks[1]); closeMenu()">Duels</div>
+    <div class="menu-item" id="rules">Rules</div>
+    <div class="menu-item" id="clap" onclick="clap(8)">🎶</div>
+    <div class="menu-item" id="compose" onclick="imgCompose()">Compose</div>
+    <div class="menu-item" id="chonk" onclick="openChonkyChonk()">Chonk</div>
+    <div class="menu-item" id="curse_search" onclick="search(0)">🔎👻</div>
+    <div class="menu-item" id="duel_search" onclick="search(1)">🔎⚔️</div>
+    <div class="menu-item" id="powerups">🪙</div>
+    <div class="menu-item" id="colorMode" onclick="preColorMode()" style="outline: 2px solid var(--color-highlight);">🌚</div>
+</div>
+
+</body>
+</html>

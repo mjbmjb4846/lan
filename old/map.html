@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SO_Map</title>
+
+    <!-- Uses Leaflet as the mapping API -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+    <style>
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            transform: translate(-10px, -10px);
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="map"></div>
+    
+</body>
+<script>
+
+    //L is a reference to the Leaflet library
+    var map = L.map('map')
+    map.setView([42.725, -84.5], 13);
+
+    //Uses OpenStreetMap for map data
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    //HTML 5 Geolocation API
+    navigator.geolocation.watchPosition(usePosition, denyPosition);
+
+    let user, userRange, gameBounds, userZoom;
+    let editorMode = false;
+
+    function usePosition(pos) {
+
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const acu = pos.coords.accuracy;
+
+        if (user && userRange) {
+            map.removeLayer(user);
+            map.removeLayer(userRange);
+        }
+
+        // Create a custom icon
+        fetch('icons/player.svg')
+            .then(response => response.text())
+            .then(data => {
+                let injected = data.replaceAll('OUTSIDE', 'violet');
+                injected = injected.replaceAll('INSIDE', 'pink');
+
+                let customIcon = L.divIcon({
+                    className: 'custom-icon',
+                    html: injected,
+                    iconSize: [40, 50],
+                    iconAnchor: [20, 50],
+                    popupAnchor: [0, -50]
+                });
+
+                user = L.marker([lat, lon], { icon: customIcon }).addTo(map);
+                userRange = L.circle([lat, lon], { radius: acu, color: "pink" } ).addTo(map);
+
+                user.bindPopup(`<h1>${getRandomElement(["😱","😭","🥲","😏","🥴","🤫","😄","😁"])}</h1>`);
+            });
+
+        //Zoom is undefined at the start of the program so starting things can be thrown in here.
+        if (!userZoom) {
+            userBound();
+            console.log(lat + " " + lon);
+        }
+
+        //map.setView([lat, lon]);
+
+        console.log("Location collected (:");
+
+    }
+
+    function denyPosition(err) {
+
+        if(err.code === 1) {
+            alert("Geolocation is blocked on your device ):");
+        } else {
+            console.log("Can't get location due to a technical error ):");
+        }
+
+    }
+
+    function userBound() {
+        userZoom = userRange.getBounds();
+        map.fitBounds(userZoom);
+    }
+
+    let corners = [];
+    map.on('click', setCorner);
+
+    function setCorner(e) {
+        if (editorMode) {
+            corners.push([e.latlng.lat, e.latlng.lng]);
+
+            setBounds();
+        }
+    }
+
+    document.addEventListener("keypress", function keyPress() {
+        console.log("got press: " + event.keyCode);
+        if (event.keyCode === 13) { // ENTER (Enter Key)
+            if (editorMode) {
+                corners.pop();
+                setBounds();
+            }
+        }
+
+        if (event.keyCode === 96) { // ` (Tilde Key)
+            editorMode = !editorMode;
+        }
+
+        if (event.keyCode === 99) { // C (Letter C)
+            navigator.clipboard.writeText(`{
+    "polygon": [ [${corners.join('], [')}] ],
+    "polygonColor": "black",
+    "marker": [${calculateMidpoint(corners)}],
+    "markerColor": "black",
+    "outsideColor": "white",
+    "title": "TITLE",
+    "tags": ["winter", "spring", "summer", "autumn"],
+    "svg": "icons/marker.svg",
+    "points": 0,
+    "description": "DESCRIPTION"
+}`);
+        }
+
+        if (event.keyCode === 100) { // D (Letter D)
+            corners = [];
+            setBounds();
+        }
+    })
+
+    function setBounds() {
+        if (gameBounds) {
+            map.removeLayer(gameBounds);
+        }
+
+        gameBounds = L.polygon(corners).addTo(map);
+    }
+
+    function calculateMidpoint(edges) {
+        console.log(edges);
+        let totalX = 0;
+        let totalY = 0;
+
+        for (let i = 0; i < edges.length; i++) {
+            totalX += edges[i][0];
+            totalY += edges[i][1];
+        }
+
+        let midpoint = [totalX / edges.length, totalY / edges.length]
+
+        return midpoint;
+    }
+
+    function getSeason() {
+        const today = new Date();
+        const month = today.getMonth();
+
+        if (month < 3 || month === 12) {
+            return "winter";
+        } else if (month < 5) {
+            return "spring";
+        } else if (month < 8) {
+            return "summer";
+        } else {
+            return "autumn";
+        }
+    }
+
+    function getRandomElement(arr) {
+        if (!Array.isArray(arr) || arr.length === 0) {
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        return arr[randomIndex];
+    }
+
+    function readJsonFromFile(jsonFile, tags) {
+        return fetch(jsonFile)
+            .then(response => response.json())
+            .then(data => {
+                // If no tags are specified, return all data
+                if (!tags || tags.length === 0) {
+                    return data;
+                }
+                // Otherwise, filter data to only include elements with at least one of the specified tags
+                return data.filter(item => item.tags.some(tag => tags.includes(tag)));
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function createFeaturesFromJson(data) {
+        data.forEach(item => {
+            // Create polygon if polygon data is present
+            if (item.polygon && item.polygonColor) {
+                let polygon = L.polygon(item.polygon, { color: item.polygonColor }).addTo(map);
+            }
+            // Create marker if marker data is present
+            if (item.marker && item.markerColor) {
+                fetch(item.icon ? `icons/${item.icon}.svg` : 'icons/marker.svg')
+                .then(response => response.text())
+                .then(data => {
+                    let injected = data.replaceAll('OUTSIDE', item.outsideColor || item.markerColor || 'white');
+                    injected = injected.replaceAll('INSIDE', item.markerColor || 'navy');
+
+                    // Create a custom icon
+                    let customIcon = L.divIcon({
+                        className: 'custom-icon',
+                        html: injected,
+                        iconSize: [40, 50],
+                        iconAnchor: [20, 50],
+                        popupAnchor: [0, -50]
+                    });
+                    let marker = L.marker(item.marker, { icon: customIcon }).addTo(map);
+
+                    // Add custom popup to marker
+                    if (item.title && item.description) {
+                        let popupContent = `<h2>${item.title}</h2>${item.points ? '<p>' + item.points + ' Points</p>' : ''}<p>${item.description}</p>`;
+                        marker.bindPopup(popupContent);
+                    }
+                });
+            }
+        });
+    }
+
+    readJsonFromFile('locations.json', /*[getSeason()]*/)
+        .then(data => createFeaturesFromJson(data));
+
+</script>
+</html>
