@@ -35,6 +35,7 @@ document.addEventListener("keydown", function keydown(e) {
                 allCorners.push(currentCorners);
                 addMarker(calculateMidpoint(currentCorners));
             } else if (currentCorners.length === 1) {
+                allCorners.push(currentCorners);
                 addMarker(calculateMidpoint(currentCorners));
             }
             currentCorners = [];
@@ -55,7 +56,7 @@ document.addEventListener("keydown", function keydown(e) {
 
             let json = jsonify();
 
-            copyText(json)
+            copyText("[\n" + json + "\n]")
         }
     }
 })
@@ -64,15 +65,13 @@ function jsonify() {
     let jsonArray = [];
 
     allCorners.forEach((set) => {
-        jsonArray.push(`{
-"polygon": [ [${set.join('], [')}] ],
-"polygonColor": "black",
+        jsonArray.push(`${set.length >= 3 ? `{\n"polygon": [ [${set.join('], [')}] ],\n"polygonColor": "#000000",` : "{"}
 "marker": [${calculateMidpoint(set)}],
-"markerColor": "black",
-"outsideColor": "white",
+"markerColor": "#000000",
+"outsideColor": "#FFFFFF",
 "title": "TITLE",
 "tags": ["winter", "spring", "summer", "autumn"],
-"svg": "icons/marker.svg",
+"icon": "marker",
 "points": 0,
 "description": "DESCRIPTION"
 }`)
