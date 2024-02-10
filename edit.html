@@ -50,9 +50,9 @@
                     title: title || "TITLE",
                     description: points || undefined,
                     points: points || undefined,
-                    polygonColor: polygonColor || undefined,
-                    markerColor: markerColor || undefined,
-                    outsideColor: outsideColor || undefined,
+                    polygonColor: !item.polygon? undefined : polygonColor || undefined,
+                    markerColor: !item.marker? undefined : markerColor || undefined,
+                    outsideColor: !item.marker? undefined : outsideColor || undefined,
                     tags: tags.length > 0 ? tags : undefined,
                     // Add other properties as needed
                 };
@@ -95,21 +95,14 @@
                 const itemDiv = document.createElement("div");
                 itemDiv.innerHTML = `
                     <h2>Edit Location ${index + 1}: ${item.title}</h2>
-                    <label for="title">Title:</label>
-                    <input type="text" id="title${index}" value="${item.title}" placeholder="Title">
-                    <label for="description">Description:</label>
-                    <textarea id="description${index}" rows="3" placeholder="Description">${item.description || ""}</textarea>
-                    <label for="points">Points:</label>
-                    <input type="number" id="points${index}" value="${item.points || 0}">
-                    <label for="polygonColor">Polygon Color:</label>
-                    <input type="color" id="polygonColor${index}" value="${item.polygonColor || "#000000"}">
-                    <label for="markerColor">Marker Color:</label>
-                    <input type="color" id="markerColor${index}" value="${item.markerColor || "#000000"}">
-                    <label for="outsideColor">Outside Color:</label>
-                    <input type="color" id="outsideColor${index}" value="${item.outsideColor || "#FFFFFF"}">
-                    <label for="tags">Tags (comma-separated):</label>
-                    <input type="text" id="tags${index}" value="${item.tags.join(", ")}" placeholder="tag1, tag2, tag3, etc.">
-                    <!-- Add other input fields for properties (e.g., polygon, marker, etc.) -->
+
+                    <label for="title">Title:</label> <input type="text" id="title${index}" value="${item.title}" placeholder="Title">
+                    <label for="description">Description:</label> <textarea id="description${index}" rows="3" placeholder="Description">${item.description || ""}</textarea>
+                    <label for="points">Points:</label> <input type="number" id="points${index}" value="${item.points || 0}">
+                    ${!item.polygon? "" : `<label for="polygonColor">Polygon Color:</label> <input type="color" id="polygonColor${index}" value="${item.polygonColor || undefined}">`}
+                    ${!item.marker? "" : `<label for="markerColor">Marker Color:</label> <input type="color" id="markerColor${index}" value="${item.markerColor || undefined}">
+                    <label for="outsideColor">Outside Color:</label> <input type="color" id="outsideColor${index}" value="${item.outsideColor || "#FFFFFF"}">`}
+                    <label for="tags">Tags (comma-separated):</label> <input type="text" id="tags${index}" value="${item.tags.join(", ")}" placeholder="tag1, tag2, tag3, etc.">
                 `;
                 outputDiv.appendChild(itemDiv);
             });
