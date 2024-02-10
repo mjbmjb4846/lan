@@ -1,7 +1,7 @@
 //HTML 5 Geolocation API
 navigator.geolocation.watchPosition(usePosition, denyPosition);
 
-let user, userRange, gameBounds, userZoom;
+let user, userRange, userZoom;
 let editorMode = false;
 
 function usePosition(pos) {
