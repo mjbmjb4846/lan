@@ -2,7 +2,7 @@ function createFeaturesFromJson(data) {
     data.forEach(item => {
         // Create polygon if polygon data is present
         if (item.polygon && item.polygonColor) {
-            let polygon = L.polygon(item.polygon, { color: item.polygonColor }).addTo(map);
+            L.polygon(item.polygon, { color: item.polygonColor }).addTo(map);
         }
         // Create marker if marker data is present
         if (item.marker && item.markerColor) {
