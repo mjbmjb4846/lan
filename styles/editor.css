@@ -1,0 +1,53 @@
+:root {
+    --text-size: 3.5vh;
+    --black: #000000;
+    --white: #FFFFFF;
+    --color-light: #FAE1FA;
+    --color-medium: #AA41C0;
+    --color-dark: #6441C3;
+    --color-alert: #FF0000;
+    --color-highlight: #FF9B00;
+}
+
+body {
+    user-select: none;
+    height: 100vh;
+    margin: 0;
+    background-color: var(--color-light);
+    cursor: default;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Style for input fields */
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="color"] {
+    height: 3.5vh;
+    width: 3.5vh;
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+}
+
+::placeholder {
+    color: #999;
+}
