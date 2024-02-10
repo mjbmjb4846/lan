@@ -1,29 +1,73 @@
+map.on('click', setCorner);
+
+let mapObjects = [];
+let markerObjects = [];
+let allCorners = [];
+let info = [];
+let currentCorners = [];
+
 function setCorner(e) {
     if (editorMode) {
-        corners.push([e.latlng.lat, e.latlng.lng]);
+        currentCorners.push([e.latlng.lat, e.latlng.lng]);
 
         setBounds();
     }
 }
 
-document.addEventListener("keypress", function keyPress() {
-    console.log("got press: " + event.keyCode);
-    if (event.keyCode === 13) { // ENTER (Enter Key)
-        if (editorMode) {
-            corners.pop();
-            setBounds();
-        }
-    }
+document.addEventListener("keydown", function keydown(e) {
+    console.log("got press: " + e.key + " Shift: " + e.shiftKey + " CTRL: " + e.ctrlKey);
 
-    if (event.keyCode === 96) { // ` (Tilde Key)
+    if (e.key === '`') {
         editorMode = !editorMode;
     }
 
-    if (event.keyCode === 99) { // C (Letter C)
-        navigator.clipboard.writeText(`{
-"polygon": [ [${corners.join('], [')}] ],
+    if (e.key === 'l') {
+        console.log(currentCorners);
+        console.log(allCorners);
+        console.log(markerObjects);
+        console.log(mapObjects);
+    }
+
+    if (editorMode) {
+
+        if ((e.key === 'Enter') || (e.key === 'Escape')) {
+            if (currentCorners.length >= 3) {
+                allCorners.push(currentCorners);
+                addMarker(calculateMidpoint(currentCorners));
+            } else if (currentCorners.length === 1) {
+                addMarker(calculateMidpoint(currentCorners));
+            }
+            currentCorners = [];
+            setBounds();
+        }
+
+        if (e.key === 'Delete') {
+            currentCorners = [];
+            setBounds();
+        }
+
+        if ((e.key === "Backspace") || (e.key === "Delete") || (e.key === "z" && e.ctrlKey)) {
+                currentCorners.pop();
+                setBounds();
+        }
+
+        if (e.key === 'c') {
+
+            let json = jsonify();
+
+            copyText(json)
+        }
+    }
+})
+
+function jsonify() {
+    let jsonArray = [];
+
+    allCorners.forEach((set) => {
+        jsonArray.push(`{
+"polygon": [ [${set.join('], [')}] ],
 "polygonColor": "black",
-"marker": [${calculateMidpoint(corners)}],
+"marker": [${calculateMidpoint(set)}],
 "markerColor": "black",
 "outsideColor": "white",
 "title": "TITLE",
@@ -31,21 +75,54 @@ document.addEventListener("keypress", function keyPress() {
 "svg": "icons/marker.svg",
 "points": 0,
 "description": "DESCRIPTION"
-}`);
-    }
+}`)
+    });
 
-    if (event.keyCode === 100) { // D (Letter D)
-        corners = [];
-        setBounds();
-    }
-})
+    return jsonArray.join(',\n');
+}
 
 function setBounds() {
-    if (gameBounds) {
-        map.removeLayer(gameBounds);
-    }
+     
+    mapObjects.forEach((object) => {
+        map.removeLayer(object);
+    });
 
-    gameBounds = L.polygon(corners).addTo(map);
+    for (let i = 0; i < allCorners.length; i++) {
+        mapObjects[i] = L.polygon(allCorners[i]).addTo(map);
+    }
+    
+    if (currentCorners.length > 0) {
+        mapObjects[allCorners.length] = L.polygon(currentCorners).addTo(map);
+    }
+}
+
+function addMarker(pos) {
+    fetch('../../icons/marker.svg')
+    .then(response => response.text())
+    .then(data => {
+        let injected = data.replaceAll('OUTSIDE', 'white');
+        injected = injected.replaceAll('INSIDE', 'black');
+    
+        // Create a custom icon
+        let customIcon = L.divIcon({
+            className: 'custom-icon',
+            html: injected,
+            iconSize: [40, 50],
+            iconAnchor: [20, 50],
+            popupAnchor: [0, -50]
+        });
+        markerObjects.push(L.marker(pos, { icon: customIcon }).addTo(map));
+
+        let marker = markerObjects[markerObjects.length-1];
+    
+        let popupContent = `<h2 contenteditable="true">TITLE</h2><p contenteditable="true">0 Points</p><p contenteditable="true">DESCRIPTION</p>`;
+        marker.bindPopup(popupContent);
+
+        marker.on("click", () => {
+            updateMarker(marker);
+            console.log("CLICK!");
+        })
+    });
 }
 
 function calculateMidpoint(edges) {
