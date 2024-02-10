@@ -1,5 +1,3 @@
-let corners = [];
-
 //L is a reference to the Leaflet library
 var map = L.map('map');
 map.setView([42.725, -84.5], 13);
