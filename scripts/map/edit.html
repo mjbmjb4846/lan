@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompSoc Editor V0.3.0</title>
+
+    <link href="./styles/editor.css" type="text/css" rel="stylesheet">
+
+</head>
+<body>
+    <h1>JSON Editor for CompSoc</h1>
+    <textarea id="jsonInput" rows="10" placeholder="Paste your JSON here"></textarea>
+    <button onclick="updateJSON()">Update JSON</button>
+    <button onclick="copyJSON()">Copy JSON</button>
+
+    <div id="output"></div>
+
+    <script>
+        // Initial JSON data (replace with your actual data)
+        let jsonData = [
+            // Your existing JSON objects here...
+        ];
+
+        // Function to update JSON
+        function updateJSON() {
+            const inputText = document.getElementById("jsonInput").value;
+            try {
+                jsonData = JSON.parse(inputText);
+                displayJSON();
+            } catch (error) {
+                console.error("Invalid JSON input:", error);
+            }
+        }
+
+        // Function to copy JSON
+        function copyJSON() {
+            const updatedData = jsonData.map((item, index) => {
+                const title = document.getElementById(`title${index}`).value;
+                const description = document.getElementById(`description${index}`).value;
+                const points = parseInt(document.getElementById(`points${index}`).value, 10);
+                const polygonColor = document.getElementById(`polygonColor${index}`).value;
+                const markerColor = document.getElementById(`markerColor${index}`).value;
+                const outsideColor = document.getElementById(`outsideColor${index}`).value;
+                const tags = document.getElementById(`tags${index}`).value.split(",").map(tag => tag.trim());
+
+                // Exclude blank or zero properties
+                const updatedItem = {
+                    ...item,
+                    title: title || "TITLE",
+                    description: points || undefined,
+                    points: points || undefined,
+                    polygonColor: polygonColor || undefined,
+                    markerColor: markerColor || undefined,
+                    outsideColor: outsideColor || undefined,
+                    tags: tags.length > 0 ? tags : undefined,
+                    // Add other properties as needed
+                };
+
+                return updatedItem;
+            });
+
+            const outputText = JSON.stringify(updatedData, null, 2);
+            document.getElementById("jsonInput").value = outputText;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(outputText)
+                .then(() => console.log("JSON copied to clipboard"))
+                .catch((err) => console.error("Error copying JSON:", err));
+        }
+
+        // Function to display JSON
+        function displayJSON() {
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "";
+
+            jsonData.forEach((item, index) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.innerHTML = `
+                    <h2>Edit Object ${index + 1}</h2>
+                    <label for="title">Title:</label>
+                    <input type="text" id="title${index}" value="${item.title}">
+                    <!-- Other input fields... -->
+                `;
+                outputDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Function to display JSON
+        function displayJSON() {
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "";
+
+            jsonData.forEach((item, index) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.innerHTML = `
+                    <h2>Edit Location ${index + 1}: ${item.title}</h2>
+                    <label for="title">Title:</label>
+                    <input type="text" id="title${index}" value="${item.title}" placeholder="Title">
+                    <label for="description">Description:</label>
+                    <textarea id="description${index}" rows="3" placeholder="Description">${item.description || ""}</textarea>
+                    <label for="points">Points:</label>
+                    <input type="number" id="points${index}" value="${item.points || 0}">
+                    <label for="polygonColor">Polygon Color:</label>
+                    <input type="color" id="polygonColor${index}" value="${item.polygonColor || "#000000"}">
+                    <label for="markerColor">Marker Color:</label>
+                    <input type="color" id="markerColor${index}" value="${item.markerColor || "#000000"}">
+                    <label for="outsideColor">Outside Color:</label>
+                    <input type="color" id="outsideColor${index}" value="${item.outsideColor || "#FFFFFF"}">
+                    <label for="tags">Tags (comma-separated):</label>
+                    <input type="text" id="tags${index}" value="${item.tags.join(", ")}" placeholder="tag1, tag2, tag3, etc.">
+                    <!-- Add other input fields for properties (e.g., polygon, marker, etc.) -->
+                `;
+                outputDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Initial display
+        displayJSON();
+    </script>
+</body>
+</html>
