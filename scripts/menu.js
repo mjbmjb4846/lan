@@ -18,6 +18,10 @@ function closeMenu() {
     main.classList.remove('blur-in');
 }
 
+function rulesLink() {
+    window.open("https://docs.google.com/document/d/1TS4Oak8E3HXPIS89GzJxD59OXFwOCX0h7Pr0zY1PsoU/edit?usp=sharing")
+}
+
 function openChonkyChonk() {
     window.open('https://doodles.google/doodle/celebrating-garden-gnomes/');
 }
@@ -89,4 +93,16 @@ function createList(rawData) {
 
 function imgCompose() {
     window.open('picMusic.html', '_blank');
+}
+
+function getVW(percent = 100) {
+    // Find the CSS property for Viewport Width (vw):
+
+    return window.innerWidth * (percent / 100);
+}
+
+function getVH(percent = 100) {
+    // Find the CSS property for Viewport Height (vh):
+
+    return window.innerHeight * (percent / 100);
 }
