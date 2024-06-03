@@ -19,7 +19,11 @@ function closeMenu() {
 }
 
 function rulesLink() {
-    window.open("https://docs.google.com/document/d/1TS4Oak8E3HXPIS89GzJxD59OXFwOCX0h7Pr0zY1PsoU/edit?usp=sharing")
+    window.open('https://docs.google.com/document/d/1TS4Oak8E3HXPIS89GzJxD59OXFwOCX0h7Pr0zY1PsoU/edit?usp=sharing');
+}
+
+function coin() {
+    window.open('https://docs.google.com/spreadsheets/d/1vYN__xNyR_klnWylPA5wJDX_5yOsFXPIdT3Ol9U74uE/edit#gid=0');
 }
 
 function openChonkyChonk() {
